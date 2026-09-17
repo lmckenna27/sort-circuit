@@ -194,9 +194,9 @@ body {
   font-size:clamp(34px,calc(var(--u)*7.4),84px);
 }
 .submade { margin-top:calc(var(--u)*.9); }
-.menu .lede { margin:calc(var(--u)*1.5) 0 0; color:var(--dim); font-size:clamp(12px,calc(var(--u)*1.4),16px); letter-spacing:-.005em; }
+.menu .lede { margin:calc(var(--u)*2.5) 0 0; color:var(--dim); font-size:clamp(12px,calc(var(--u)*1.4),16px); letter-spacing:-.005em; }
 
-.key { display:flex; gap:calc(var(--u)*2.6); margin-top:calc(var(--u)*3.4); }
+.key { display:flex; gap:calc(var(--u)*2.6); margin-top:calc(var(--u)*2); }
 .key div { display:flex; flex-direction:column; align-items:center; gap:calc(var(--u)*.75); }
 .key img { height:clamp(18px,calc(var(--u)*2.5),28px); opacity:.9; }
 
@@ -321,7 +321,7 @@ button.cta:focus-visible, button.txt:focus-visible { outline:2px solid var(--alu
     justify-content:center;gap:.4em;padding:9px 42px 9px 16px;text-align:center;}
   #verBanner[hidden]{display:none;}
   #verBanner a{color:#111;text-decoration:underline;text-underline-offset:2px;cursor:pointer;
-    display:inline-flex;align-items:center;gap:.32em;font-weight:700;}
+    display:inline-flex;align-items:center;gap:.32em;font-weight:400;}
   #verBanner a svg{width:1em;height:1em;flex:none;}
   #verBannerX{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:0;
     color:#111;font-size:22px;line-height:1;cursor:pointer;padding:0 7px;border-radius:5px;}
@@ -337,7 +337,6 @@ button.cta:focus-visible, button.txt:focus-visible { outline:2px solid var(--alu
   #verModal h3{margin:20px 0 6px;font-size:15px;}
   #verModal ul{margin:8px 0 0;padding-left:20px;}
   #verModal li{margin:8px 0;}
-  #verModal .prizes li{font-weight:600;}
   #verModal a{color:#7FB0FF;}
   #verModal .vm-close{position:absolute;top:12px;right:12px;background:none;border:0;color:#EDEFF1;
     font-size:24px;line-height:1;cursor:pointer;padding:2px 8px;border-radius:6px;}
@@ -350,7 +349,7 @@ button.cta:focus-visible, button.txt:focus-visible { outline:2px solid var(--alu
 <div id="verModal" hidden>
   <div class="vm-card" role="dialog" aria-modal="true" aria-labelledby="vmTitle">
     <button class="vm-close" id="verModalX" aria-label="Close">&times;</button>
-    <h2 id="vmTitle">Update 3.1</h2>
+    <h2 id="vmTitle">Update: v3.1</h2>
     <div class="vm-date">Thursday, September 17th, 2026 &middot; 12:00 AM</div>
     <p><strong>You're now competing for some cash prizes!</strong></p>
     <ul class="prizes">
@@ -1306,6 +1305,16 @@ async function scoreKey(sid){
   const buf=await crypto.subtle.digest('SHA-256', new TextEncoder().encode('sortcircuit|'+sid));
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
+// Client-side rate limit: at most 3 leaderboard submissions per rolling minute.
+// Each submission does a roster name lookup, so this also caps name lookups at
+// 3/min — friction against anyone probing many Student IDs. (Per browser.)
+function rateLimitOk(){
+  const K='sc:rl', now=Date.now(); let a;
+  try{ a=JSON.parse(store.get(K)||'[]'); }catch(e){ a=[]; }
+  a=a.filter(t=>now-t<60000);
+  if(a.length>=3) return false;
+  a.push(now); store.set(K,JSON.stringify(a)); return true;
+}
 const Board={
   entries:[], online:REMOTE, error:null,
   fromLocal(){ try{ this.entries=JSON.parse(store.get(BOARD_KEY)||'[]'); }catch(e){ this.entries=[]; } this.sort(); },
@@ -1326,6 +1335,7 @@ const Board={
   sort(){ this.entries.sort((a,b)=>b.score-a.score || a.t-b.t); this.entries.length=Math.min(this.entries.length,BOARD_MAX); },
   async save(entry){
     if(REMOTE){
+      if(!rateLimitOk()){ const err=new Error("You're going too fast — the leaderboard takes at most 3 submissions a minute. Please wait a moment and try again."); err.isValidation=true; throw err; }
       // 1) resolve the entered Student ID to a display name via the private roster.
       const sid=String(entry.id||'').replace(/\D/g,'');
       if(!sid){ const err=new Error('Please enter your Student ID (numbers only).'); err.isValidation=true; throw err; }

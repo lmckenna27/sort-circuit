@@ -239,7 +239,7 @@ const ERROR_CODES = {
     category: 'Routing',
     title: 'Page Not Found (404)',
     message: 'The requested page or resource could not be found.',
-    solution: 'Navigate back to game.html or admin.html using the provided links.'
+    solution: 'Navigate back to the game using the provided links.'
   },
   ERR_RUNTIME_EXCEPTION: {
     code: 'SC-SYS-001',

@@ -25,8 +25,7 @@ A physics-based recycling sorting game, made by **Ecological Justice**. Drag eac
 
 ## Admin
 
-- There is no separate admin app for the Firebase leaderboard — view and moderate scores directly in the [Firebase Console](https://console.firebase.google.com/project/sort-circuit/firestore/data) (Firestore → Data).
-- `admin.html` is the old Supabase panel and is no longer wired up.
+- There is no separate admin app — view and moderate scores directly in the [Firebase Console](https://console.firebase.google.com/project/sort-circuit/firestore/data) (Firestore → Data).
 
 ## Configuration & secrets
 
