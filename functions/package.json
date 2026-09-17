@@ -1,0 +1,17 @@
+{
+  "name": "sort-circuit-functions",
+  "description": "Cloud Functions for the Sort Circuit leaderboard (server-only score submission + leaderboard).",
+  "engines": {
+    "node": "20"
+  },
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "serve": "firebase emulators:start --only functions,firestore",
+    "seed": "node seed-roster.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^5.1.1"
+  }
+}

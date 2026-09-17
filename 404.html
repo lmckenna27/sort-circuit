@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sort Circuit — 404 Not Found</title>
+<meta name="description" content="Sorting Error 404: Page not found. Looks like this item fell off the conveyor belt.">
+<meta name="theme-color" content="#08090A">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%230A0C0D'/%3E%3Crect x='4' y='14' width='4.5' height='6' rx='1' fill='%235BC431'/%3E%3Crect x='9.75' y='11' width='4.5' height='9' rx='1' fill='%23EFCC5A'/%3E%3Crect x='15.5' y='8' width='4.5' height='12' rx='1' fill='%237093E4'/%3E%3C/svg%3E">
+<style>
+:root {
+  --void:#08090A;
+  --panel:#0E1114;
+  --card:rgba(242,244,245,.04);
+  --card-hover:rgba(242,244,245,.07);
+  --ink:#F2F4F5;
+  --dim:#8B939A;
+  --mute:#4B5257;
+  --line:rgba(242,244,245,.14);
+  --acc:#7093E4;
+  --bad:#FF4B3E;
+  --ok:#5BC431;
+  --aluminum:#EFCC5A;
+  --compost:#5BC431;
+  --landfill:#C5A845;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  background:var(--void);
+  color:var(--ink);
+  font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:32px 20px 60px;
+}
+main {
+  width:100%;
+  max-width:920px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:32px;
+}
+.hero {
+  width:100%;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:16px;
+  padding:40px 20px 20px;
+}
+/* ── Conveyor 404 Animation ───────────────────────── */
+.scene {
+  position:relative;
+  width:100%;
+  max-width:540px;
+  height:180px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  border-radius:18px;
+  background:linear-gradient(180deg, rgba(20,24,28,.6) 0%, rgba(10,12,14,.9) 100%);
+  border:1px solid var(--line);
+  box-shadow:0 30px 60px -30px #000;
+}
+.belt {
+  position:absolute;
+  bottom:38px;
+  left:0;
+  right:0;
+  height:14px;
+  background:repeating-linear-gradient(90deg, #1c2126 0, #1c2126 18px, #2a3138 18px, #2a3138 36px);
+  background-size:72px 14px;
+  animation:roll 1.6s linear infinite;
+  border-top:2px solid rgba(242,244,245,.2);
+  border-bottom:2px solid rgba(0,0,0,.6);
+}
+@keyframes roll {
+  0% { background-position:0 0; }
+  100% { background-position:72px 0; }
+}
+.drop-item {
+  position:absolute;
+  bottom:54px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  animation:wobble 2.8s ease-in-out infinite;
+}
+@keyframes wobble {
+  0%, 100% { transform:translateX(-50%) rotate(0deg); }
+  25% { transform:translateX(calc(-50% + 6px)) rotate(4deg); }
+  75% { transform:translateX(calc(-50% - 6px)) rotate(-4deg); }
+}
+.glitch-num {
+  font-size:74px;
+  font-weight:900;
+  letter-spacing:-.05em;
+  line-height:.85;
+  color:var(--bad);
+  text-shadow:0 0 24px rgba(255,75,62,.45);
+  display:flex;
+  align-items:center;
+  gap:2px;
+}
+.glitch-num span:nth-child(2) {
+  color:var(--ink);
+  font-size:62px;
+  animation:blink 1.2s infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity:1; }
+  50% { opacity:.3; }
+}
+.sparks {
+  position:absolute;
+  bottom:50px;
+  display:flex;
+  gap:40px;
+}
+.spark {
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--aluminum);
+  box-shadow:0 0 10px var(--aluminum);
+  animation:spark 1.4s ease-out infinite;
+}
+.spark:nth-child(2) { animation-delay:.4s; background:var(--bad); box-shadow:0 0 10px var(--bad); }
+.spark:nth-child(3) { animation-delay:.8s; background:var(--acc); box-shadow:0 0 10px var(--acc); }
+@keyframes spark {
+  0% { transform:translate(0,0) scale(1); opacity:1; }
+  100% { transform:translate(calc(var(--dx,10px)),calc(var(--dy,-25px))) scale(0); opacity:0; }
+}
+.spark:nth-child(1) { --dx:-18px; --dy:-30px; }
+.spark:nth-child(2) { --dx:15px; --dy:-22px; }
+.spark:nth-child(3) { --dx:-6px; --dy:-35px; }
+
+/* ── Bins visual ──────────────────────────────────── */
+.bins-row {
+  position:absolute;
+  bottom:8px;
+  display:flex;
+  gap:16px;
+}
+.bin-mini {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:10px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  padding:4px 8px;
+  border-radius:6px;
+  background:rgba(0,0,0,.5);
+  border:1px solid rgba(255,255,255,.08);
+}
+.dot { width:8px; height:8px; border-radius:2px; }
+.dot.c { background:var(--compost); box-shadow:0 0 8px var(--compost); }
+.dot.l { background:var(--landfill); box-shadow:0 0 8px var(--landfill); }
+.dot.a { background:var(--acc); box-shadow:0 0 8px var(--acc); }
+
+/* ── Typography & Badge ───────────────────────────── */
+h1 {
+  font-size:clamp(24px,4vw,34px);
+  font-weight:800;
+  letter-spacing:-.03em;
+}
+p.lede {
+  color:var(--dim);
+  font-size:clamp(15px,2vw,17px);
+  max-width:580px;
+}
+.err-tag {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 14px;
+  border-radius:999px;
+  background:rgba(255,75,62,.12);
+  border:1px solid rgba(255,75,62,.3);
+  color:var(--bad);
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.06em;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+
+/* ── Action Buttons ───────────────────────────────── */
+.acts {
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-top:6px;
+}
+a.btn, button.btn {
+  font:inherit;
+  font-size:14px;
+  font-weight:700;
+  text-decoration:none;
+  padding:12px 22px;
+  border-radius:999px;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid var(--line);
+  transition:transform .15s ease, background .15s ease, border-color .15s ease;
+}
+a.btn.primary {
+  background:var(--acc);
+  color:#0B0E12;
+  border-color:var(--acc);
+}
+a.btn.primary:hover {
+  transform:translateY(-1px);
+  filter:brightness(1.1);
+}
+a.btn.ghost, button.btn.ghost {
+  background:rgba(242,244,245,.06);
+  color:var(--ink);
+}
+a.btn.ghost:hover, button.btn.ghost:hover {
+  background:rgba(242,244,245,.12);
+  border-color:rgba(242,244,245,.25);
+  transform:translateY(-1px);
+}
+
+/* ── Error Directory Section ──────────────────────── */
+.directory {
+  width:100%;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:28px 24px;
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+.dir-header {
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.dir-header h2 {
+  font-size:19px;
+  font-weight:700;
+  letter-spacing:-.02em;
+}
+.dir-header p {
+  font-size:13px;
+  color:var(--dim);
+}
+.search-bar {
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.search-bar input {
+  flex:1 1 240px;
+  font:inherit;
+  font-size:14px;
+  padding:10px 14px;
+  border-radius:10px;
+  background:rgba(242,244,245,.06);
+  border:1px solid var(--line);
+  color:var(--ink);
+  outline:none;
+}
+.search-bar input:focus {
+  border-color:var(--acc);
+}
+.filter-chips {
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.chip {
+  font-size:12px;
+  font-weight:600;
+  padding:5px 12px;
+  border-radius:999px;
+  background:rgba(242,244,245,.06);
+  border:1px solid var(--line);
+  color:var(--dim);
+  cursor:pointer;
+  user-select:none;
+  transition:all .15s ease;
+}
+.chip.active, .chip:hover {
+  color:var(--ink);
+  border-color:var(--acc);
+  background:rgba(112,147,228,.15);
+}
+.err-list {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(270px, 1fr));
+  gap:12px;
+  margin-top:6px;
+}
+.err-card {
+  background:rgba(10,12,14,.7);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:14px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  transition:border-color .15s ease, background .15s ease;
+}
+.err-card:hover {
+  background:var(--card-hover);
+  border-color:rgba(242,244,245,.25);
+}
+.err-card.target {
+  border-color:var(--bad);
+  background:rgba(255,75,62,.08);
+  box-shadow:0 0 20px rgba(255,75,62,.15);
+}
+.err-top {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.err-badge {
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  font-size:12px;
+  font-weight:700;
+  color:var(--acc);
+  background:rgba(112,147,228,.14);
+  border:1px solid rgba(112,147,228,.3);
+  padding:2px 8px;
+  border-radius:6px;
+}
+.err-cat {
+  font-size:11px;
+  color:var(--dim);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  font-weight:600;
+}
+.err-title {
+  font-size:14px;
+  font-weight:700;
+  color:var(--ink);
+}
+.err-msg {
+  font-size:13px;
+  color:var(--dim);
+  line-height:1.4;
+}
+.err-sol {
+  font-size:12px;
+  color:#5BC431;
+  background:rgba(91,196,49,.08);
+  border:1px solid rgba(91,196,49,.2);
+  padding:6px 10px;
+  border-radius:6px;
+  margin-top:4px;
+  line-height:1.35;
+}
+.footer {
+  color:var(--mute);
+  font-size:13px;
+  text-align:center;
+}
+.footer a {
+  color:var(--dim);
+  text-decoration:none;
+}
+.footer a:hover {
+  text-decoration:underline;
+}
+</style>
+</head>
+<body>
+
+<main>
+  <section class="hero">
+    <div class="scene">
+      <div class="drop-item">
+        <div class="glitch-num">
+          <span>4</span><span>0</span><span>4</span>
+        </div>
+      </div>
+      <div class="sparks">
+        <div class="spark"></div>
+        <div class="spark"></div>
+        <div class="spark"></div>
+      </div>
+      <div class="belt"></div>
+      <div class="bins-row">
+        <div class="bin-mini"><div class="dot c"></div>Compost</div>
+        <div class="bin-mini"><div class="dot l"></div>Landfill</div>
+        <div class="bin-mini"><div class="dot a"></div>Aluminum</div>
+      </div>
+    </div>
+
+    <div class="err-tag" id="activeErrorCode">
+      <span>Error Code:</span> <strong>SC-ROUTER-404</strong>
+    </div>
+
+    <h1>Item Dropped Off The Belt!</h1>
+    <p class="lede">
+      This page fell into the wrong bin or got lost down the sorting line. One mistake ends the run, but you can always restart.
+    </p>
+
+    <div class="acts">
+      <a class="btn primary" href="game.html">Play Sort Circuit</a>
+      <a class="btn ghost" href="admin.html">Leaderboard Admin</a>
+      <button class="btn ghost" onclick="history.length > 1 ? history.back() : location.href='game.html'">Go Back</button>
+    </div>
+  </section>
+
+  <section class="directory" id="directory">
+    <div class="dir-header">
+      <h2>Sort Circuit — Error Code Directory</h2>
+      <p>Search any error code or message you encountered during gameplay or administration to find its meaning and solution.</p>
+    </div>
+
+    <div class="search-bar">
+      <input type="search" id="errSearch" placeholder="Search by error code (e.g. SC-VAL-002, network, auth)…" autocomplete="off">
+      <div class="filter-chips" id="filterChips">
+        <div class="chip active" data-cat="all">All</div>
+        <div class="chip" data-cat="Validation">Validation</div>
+        <div class="chip" data-cat="Network">Network</div>
+        <div class="chip" data-cat="Authentication">Auth</div>
+        <div class="chip" data-cat="Data">Data</div>
+        <div class="chip" data-cat="Configuration">Config</div>
+        <div class="chip" data-cat="Audio">Audio / Gfx</div>
+        <div class="chip" data-cat="System">System</div>
+      </div>
+    </div>
+
+    <div class="err-list" id="errGrid"></div>
+  </section>
+
+  <footer class="footer">
+    Sort Circuit by Ecological Justice · <a href="game.html">Play Game</a> · <a href="admin.html">Admin Panel</a>
+  </footer>
+</main>
+
+<script>
+// Error Codes Catalog
+const ERROR_CATALOG = [
+  {
+    code: 'SC-VAL-001',
+    category: 'Validation',
+    title: 'Student ID Required',
+    message: 'Student ID is required to save your score to the leaderboard.',
+    solution: 'Enter your assigned numeric student ID into the input field before clicking Save.'
+  },
+  {
+    code: 'SC-VAL-002',
+    category: 'Validation',
+    title: 'Numbers Only',
+    message: 'Student ID must contain digits only (0–9). Letters, spaces, words, and symbols are rejected.',
+    solution: 'Remove any letters or special characters; only numbers are accepted for student privacy.'
+  },
+  {
+    code: 'SC-VAL-003',
+    category: 'Validation',
+    title: 'Student ID Too Long',
+    message: 'Student ID exceeds the maximum permitted length of 40 digits.',
+    solution: 'Double-check your student ID and ensure it contains 40 or fewer digits.'
+  },
+  {
+    code: 'SC-VAL-004',
+    category: 'Validation',
+    title: 'Invalid Score',
+    message: 'Submitted score is negative, NaN, or non-numeric.',
+    solution: 'Complete a valid sorting run to register a positive score.'
+  },
+  {
+    code: 'SC-VAL-005',
+    category: 'Validation',
+    title: 'Invalid Game Mode',
+    message: 'The selected game mode was not recognized by the leaderboard.',
+    solution: 'Restart the game and select standard or sudden death mode from the main menu.'
+  },
+  {
+    code: 'SC-NET-001',
+    category: 'Network',
+    title: 'Device Offline',
+    message: 'No internet connection detected on this device.',
+    solution: 'Connect to Wi-Fi or cellular data. Scores earned while offline are stored on this device.'
+  },
+  {
+    code: 'SC-NET-002',
+    category: 'Network',
+    title: 'Leaderboard Unreachable',
+    message: 'Could not establish an HTTP connection with the Supabase leaderboard service.',
+    solution: 'Check your internet connection or firewall. Scores remain safe on this device until reconnected.'
+  },
+  {
+    code: 'SC-NET-003',
+    category: 'Network',
+    title: 'Request Timed Out',
+    message: 'The request to Supabase took too long to complete.',
+    solution: 'Your connection may be unstable. Wait a few seconds and try again.'
+  },
+  {
+    code: 'SC-NET-004',
+    category: 'Network',
+    title: 'Rate Limit Exceeded',
+    message: 'Too many requests were sent in a short window of time (HTTP 429).',
+    solution: 'Wait 10–15 seconds before saving or refreshing again.'
+  },
+  {
+    code: 'SC-NET-005',
+    category: 'Network',
+    title: 'Cross-Origin Request Blocked',
+    message: 'The browser blocked the request due to CORS (Cross-Origin Resource Sharing) restrictions.',
+    solution: 'Verify your hosting origin domain in Supabase project API settings.'
+  },
+  {
+    code: 'SC-AUTH-001',
+    category: 'Authentication',
+    title: 'Invalid Credentials',
+    message: 'Incorrect administrator email address or password.',
+    solution: 'Double-check your email and password in the Admin login form.'
+  },
+  {
+    code: 'SC-AUTH-002',
+    category: 'Authentication',
+    title: 'Session Expired',
+    message: 'Your administrator authentication session has expired or is invalid (HTTP 401).',
+    solution: 'Sign in again with your administrator email and password.'
+  },
+  {
+    code: 'SC-AUTH-003',
+    category: 'Authentication',
+    title: 'Token Refresh Failed',
+    message: 'Could not refresh the stored Supabase access token.',
+    solution: 'Click Sign Out, then sign in again with your password to obtain a fresh token.'
+  },
+  {
+    code: 'SC-AUTH-004',
+    category: 'Authentication',
+    title: 'Access Forbidden (RLS)',
+    message: 'Database Row Level Security (RLS) rejected the requested operation.',
+    solution: 'Ensure the signed-in user account has administrator roles in the Supabase scores table.'
+  },
+  {
+    code: 'SC-DATA-001',
+    category: 'Data',
+    title: 'Score Save Failed',
+    message: 'An error occurred while inserting your score into the leaderboard table.',
+    solution: 'Your score was saved locally. Click Again and try submitting once your connection stabilizes.'
+  },
+  {
+    code: 'SC-DATA-002',
+    category: 'Data',
+    title: 'Leaderboard Load Failed',
+    message: 'Failed to retrieve the latest student scores from the database.',
+    solution: 'The game will show local scores saved on this device. Click Refresh or check your connection.'
+  },
+  {
+    code: 'SC-DATA-003',
+    category: 'Data',
+    title: 'Score Delete Failed',
+    message: 'The administrator delete operation failed or was rejected by database permissions.',
+    solution: 'Verify your admin account is still authenticated with delete privileges.'
+  },
+  {
+    code: 'SC-DATA-004',
+    category: 'Data',
+    title: 'Local Storage Blocked',
+    message: 'Browser localStorage is disabled, blocked by privacy settings, or storage quota exceeded.',
+    solution: 'Enable cookies/site data in browser settings or exit incognito/private browsing mode.'
+  },
+  {
+    code: 'SC-DATA-005',
+    category: 'Data',
+    title: 'CSV Export Failed',
+    message: 'The browser was unable to generate or trigger the CSV download.',
+    solution: 'Ensure download popups are permitted for this site in your browser settings.'
+  },
+  {
+    code: 'SC-CFG-001',
+    category: 'Configuration',
+    title: 'Supabase Not Configured',
+    message: 'Supabase project URL or publishable API key is empty or unconfigured.',
+    solution: 'Set the SUPABASE.url and SUPABASE.key constants in the HTML files.'
+  },
+  {
+    code: 'SC-CFG-002',
+    category: 'Configuration',
+    title: 'Invalid Configuration URL',
+    message: 'The SUPABASE.url value is not a valid HTTPS URL.',
+    solution: 'Check the URL format; it must begin with https:// and point to your project.'
+  },
+  {
+    code: 'SC-AUDIO-001',
+    category: 'Audio',
+    title: 'Audio Initialization Failed',
+    message: 'Web Audio API context could not be created or audio playback was blocked.',
+    solution: 'Click or tap anywhere on the screen to permit browser audio playback.'
+  },
+  {
+    code: 'SC-AUDIO-002',
+    category: 'Audio',
+    title: 'Synthesizer Error',
+    message: 'Sound synthesis oscillator or gain node encountered an unexpected audio buffer error.',
+    solution: 'Sound was safely muted. Use the sound toggle icon to unmute anytime.'
+  },
+  {
+    code: 'SC-GFX-001',
+    category: 'Audio',
+    title: 'Canvas Unsupported',
+    message: 'HTML5 2D Canvas rendering is not supported by this browser.',
+    solution: 'Please update your browser or open Sort Circuit in Chrome, Edge, Safari, or Firefox.'
+  },
+  {
+    code: 'SC-GFX-002',
+    category: 'Audio',
+    title: 'Graphics Context Lost',
+    message: 'The GPU rendering context was lost due to system graphics reset.',
+    solution: 'Reload the page to recreate the canvas rendering context.'
+  },
+  {
+    code: 'SC-FONT-001',
+    category: 'Audio',
+    title: 'Custom Font Load Failed',
+    message: 'The embedded Open Sauce Sans typeface failed to decode or render.',
+    solution: 'The game automatically falls back to system fonts; gameplay is unaffected.'
+  },
+  {
+    code: 'SC-ROUTER-404',
+    category: 'System',
+    title: 'Page Not Found (404)',
+    message: 'The requested page or resource route does not exist.',
+    solution: 'Use the buttons above to return to the game or admin panel.'
+  },
+  {
+    code: 'SC-SYS-001',
+    category: 'System',
+    title: 'Runtime Error',
+    message: 'An uncaught JavaScript runtime error occurred in the game engine.',
+    solution: 'Refresh the page. If the problem recurs, report the error code to your instructor.'
+  },
+  {
+    code: 'SC-SYS-002',
+    category: 'System',
+    title: 'Unhandled Rejection',
+    message: 'An asynchronous promise rejected without an active catch handler.',
+    solution: 'Check your connection and refresh the browser window.'
+  }
+];
+
+let selectedCategory = 'all';
+let searchQuery = '';
+
+function renderDirectory() {
+  const grid = document.getElementById('errGrid');
+  const q = searchQuery.trim().toLowerCase();
+  
+  const filtered = ERROR_CATALOG.filter(item => {
+    const matchesCat = selectedCategory === 'all' || 
+      (selectedCategory === 'Audio' ? (item.category === 'Audio' || item.category === 'Graphics') : item.category === selectedCategory);
+    const matchesQuery = !q || 
+      item.code.toLowerCase().includes(q) ||
+      item.title.toLowerCase().includes(q) ||
+      item.message.toLowerCase().includes(q) ||
+      item.category.toLowerCase().includes(q);
+    return matchesCat && matchesQuery;
+  });
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;padding:30px;text-align:center;color:var(--dim)">No error codes found matching your search.</div>';
+    return;
+  }
+
+  const targetCode = (location.hash.replace('#', '') || new URLSearchParams(location.search).get('code') || '').toUpperCase();
+
+  grid.innerHTML = filtered.map(item => `
+    <div class="err-card ${item.code === targetCode ? 'target' : ''}" id="${item.code}">
+      <div class="err-top">
+        <span class="err-badge">${item.code}</span>
+        <span class="err-cat">${item.category}</span>
+      </div>
+      <div class="err-title">${item.title}</div>
+      <div class="err-msg">${item.message}</div>
+      <div class="err-sol"><strong>Fix:</strong> ${item.solution}</div>
+    </div>
+  `).join('');
+
+  if (targetCode) {
+    const el = document.getElementById(targetCode);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+// Event Listeners
+document.getElementById('errSearch').addEventListener('input', e => {
+  searchQuery = e.target.value;
+  renderDirectory();
+});
+
+document.getElementById('filterChips').addEventListener('click', e => {
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  selectedCategory = chip.dataset.cat;
+  renderDirectory();
+});
+
+// Check URL params for code lookup
+const initialCode = (location.hash.replace('#', '') || new URLSearchParams(location.search).get('code') || '').toUpperCase();
+if (initialCode) {
+  const match = ERROR_CATALOG.find(x => x.code === initialCode);
+  if (match) {
+    document.getElementById('activeErrorCode').innerHTML = `<span>Error Code:</span> <strong>${match.code}</strong> — ${match.title}`;
+    document.getElementById('errSearch').value = match.code;
+    searchQuery = match.code;
+  }
+}
+
+renderDirectory();
+</script>
+
+</body>
+</html>

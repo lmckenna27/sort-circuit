@@ -1,0 +1,22 @@
+# === SENSITIVE — never commit ===
+# Full student roster (IDs -> names):
+roster_seed.json
+functions_roster_seed.json
+.emulator-data/
+# Old leaderboard export (contains Student IDs):
+scores_rows.csv
+# Service-account keys (grant full admin access to Firebase):
+*-firebase-adminsdk-*.json
+*serviceAccount*.json
+*service-account*.json
+
+# Firebase / Node
+functions/node_modules/
+*-debug.log
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+.firebase/
+
+# macOS
+.DS_Store
