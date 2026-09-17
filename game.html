@@ -193,6 +193,7 @@ body {
   font-weight:700; margin:0; line-height:.92; letter-spacing:-.045em;
   font-size:clamp(34px,calc(var(--u)*7.4),84px);
 }
+.submade { margin-top:calc(var(--u)*.9); }
 .menu .lede { margin:calc(var(--u)*1.5) 0 0; color:var(--dim); font-size:clamp(12px,calc(var(--u)*1.4),16px); letter-spacing:-.005em; }
 
 .key { display:flex; gap:calc(var(--u)*2.6); margin-top:calc(var(--u)*3.4); }
@@ -314,6 +315,76 @@ button.cta:focus-visible, button.txt:focus-visible { outline:2px solid var(--alu
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
+<style>
+  #verBanner{position:fixed;top:0;left:0;right:0;z-index:1000;background:#FBD024;color:#111;
+    font:600 clamp(12px,2.5vw,14px)/1.35 system-ui,-apple-system,sans-serif;display:flex;align-items:center;
+    justify-content:center;gap:.4em;padding:9px 42px 9px 16px;text-align:center;}
+  #verBanner[hidden]{display:none;}
+  #verBanner a{color:#111;text-decoration:underline;text-underline-offset:2px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:.32em;font-weight:700;}
+  #verBanner a svg{width:1em;height:1em;flex:none;}
+  #verBannerX{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:0;
+    color:#111;font-size:22px;line-height:1;cursor:pointer;padding:0 7px;border-radius:5px;}
+  #verBannerX:hover{background:rgba(0,0,0,.14);}
+  #verModal{position:fixed;inset:0;z-index:1001;background:rgba(0,0,0,.64);display:flex;
+    align-items:center;justify-content:center;padding:18px;}
+  #verModal[hidden]{display:none;}
+  #verModal .vm-card{background:#14171A;color:#EDEFF1;border:1px solid rgba(255,255,255,.13);border-radius:14px;
+    max-width:540px;width:100%;max-height:86vh;overflow:auto;padding:24px 26px 26px;position:relative;
+    box-shadow:0 40px 100px -30px #000;font:400 15px/1.55 system-ui,-apple-system,sans-serif;}
+  #verModal h2{margin:0;font-size:21px;letter-spacing:-.01em;}
+  #verModal .vm-date{color:#8A939A;font-size:12.5px;margin:3px 0 16px;}
+  #verModal h3{margin:20px 0 6px;font-size:15px;}
+  #verModal ul{margin:8px 0 0;padding-left:20px;}
+  #verModal li{margin:8px 0;}
+  #verModal .prizes li{font-weight:600;}
+  #verModal a{color:#7FB0FF;}
+  #verModal .vm-close{position:absolute;top:12px;right:12px;background:none;border:0;color:#EDEFF1;
+    font-size:24px;line-height:1;cursor:pointer;padding:2px 8px;border-radius:6px;}
+  #verModal .vm-close:hover{background:rgba(255,255,255,.1);}
+</style>
+<div id="verBanner" hidden>
+  <span>Version 3.1 is here – <a id="verBannerLink" role="button" tabindex="0">we've made some important changes<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4l-8.5 8.5"/><path d="M18 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6"/></svg></a></span>
+  <button id="verBannerX" aria-label="Dismiss">&times;</button>
+</div>
+<div id="verModal" hidden>
+  <div class="vm-card" role="dialog" aria-modal="true" aria-labelledby="vmTitle">
+    <button class="vm-close" id="verModalX" aria-label="Close">&times;</button>
+    <h2 id="vmTitle">Update 3.1</h2>
+    <div class="vm-date">Thursday, September 17th, 2026 &middot; 12:00 AM</div>
+    <p><strong>You're now competing for some cash prizes!</strong></p>
+    <ul class="prizes">
+      <li>1st place – $50</li>
+      <li>2nd place – $25</li>
+      <li>3rd place – $25</li>
+    </ul>
+    <h3>Also, please note the changes we've made to Sort Circuit:</h3>
+    <ul>
+      <li>The progressive difficulty of the game has been increased – now, it's harder to break into the 900+ points range. As a result, we've decreased the scores of all top competitors on the leaderboard proportionally.</li>
+      <li>When you enter your student ID to submit your score, we'll automatically grab your name. Your name and school year are the only two things displayed on the leaderboard. If, for whatever reason, your ID is missing from our database, please email <a href="mailto:ecojustice@brophybroncos.org">ecojustice@brophybroncos.org</a>.</li>
+      <li>Please refrain from entering someone else's student ID into the leaderboard. Don't attempt to cheat or &ldquo;hack&rdquo; the game to post an illegitimate score to the leaderboard. It ruins the fun for everyone. Anyone caught doing either is subject to receiving a JUG.</li>
+    </ul>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY='sc:banner:v3.1:dismissed';
+  var banner=document.getElementById('verBanner'), modal=document.getElementById('verModal');
+  function setPad(){ document.body.style.paddingTop = banner.hidden ? '' : banner.offsetHeight+'px'; }
+  try{ if(localStorage.getItem(KEY)!=='1') banner.hidden=false; }catch(e){ banner.hidden=false; }
+  setPad(); window.addEventListener('resize',setPad);
+  var openM=function(){ modal.hidden=false; }, closeM=function(){ modal.hidden=true; };
+  var link=document.getElementById('verBannerLink');
+  link.addEventListener('click',function(e){ e.preventDefault(); openM(); });
+  link.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openM(); } });
+  document.getElementById('verModalX').addEventListener('click',closeM);
+  modal.addEventListener('click',function(e){ if(e.target===modal) closeM(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeM(); });
+  document.getElementById('verBannerX').addEventListener('click',function(){
+    banner.hidden=true; setPad(); try{ localStorage.setItem(KEY,'1'); }catch(e){}
+  });
+})();
+</script>
 <main id="sc">
  <div id="layout">
   <aside id="board" aria-label="Leaderboard">
@@ -352,6 +423,7 @@ button.cta:focus-visible, button.txt:focus-visible { outline:2px solid var(--alu
 
     <section class="panel menu" id="menuPanel">
       <h1 class="title">Sort Circuit</h1>
+      <div class="mi submade">Made by Brophy Ecological Justice</div>
       <p class="lede">Drag each item to its bin. One mistake ends the run.</p>
       <div class="key">
         <div><img id="kCompost" alt=""><span class="mi">Compost</span></div>
@@ -362,7 +434,6 @@ button.cta:focus-visible, button.txt:focus-visible { outline:2px solid var(--alu
         <button class="cta" id="startBtn">Start</button>
       </div>
       <div class="bestline mi" id="menuBest" hidden></div>
-      <p class="credit">Made by Ecological Justice · <a href="404.html" style="color:var(--dim);text-decoration:none">Errors &amp; 404</a></p>
     </section>
 
     <section class="panel" id="pausePanel" hidden>
