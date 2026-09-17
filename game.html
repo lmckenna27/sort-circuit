@@ -88,7 +88,7 @@ body {
 .hud {
   position:absolute; inset:0 0 auto 0; display:flex; align-items:flex-start;
   justify-content:space-between; gap:calc(var(--u)*2);
-  padding:calc(var(--u)*2.2) calc(var(--u)*2.4); pointer-events:none; z-index:3;
+  padding:calc(var(--u)*2.8) calc(var(--u)*3.2); pointer-events:none; z-index:3;
   transition:opacity .4s ease, transform .4s ease;
 }
 /* faded out; the matching `inert` in JS is what takes it out of the tab order */
@@ -124,6 +124,7 @@ body {
 #segs.max i.on { background:var(--ink); box-shadow:0 0 calc(var(--u)*.9) rgba(242,244,245,.6); }
 
 .right { flex:1; display:flex; align-items:center; justify-content:flex-end; gap:calc(var(--u)*1.4); padding-top:calc(var(--u)*.4); }
+#bestVal, #lives { display:none !important; }   /* removed from the HUD — only mute/pause remain */
 #bestVal { font-weight:600; font-size:clamp(10px,calc(var(--u)*1.25),14px);
   color:var(--mute); font-variant-numeric:tabular-nums; letter-spacing:-.01em; }
 #lives { display:flex; gap:calc(var(--u)*.42); }
@@ -135,13 +136,13 @@ body {
 #lives.solo i { background:var(--alert); }
 .btns { display:flex; gap:max(6px,calc(var(--u)*.5)); pointer-events:auto; }
 .icon {
-  width:clamp(32px,calc(var(--u)*3.2),36px); height:clamp(32px,calc(var(--u)*3.2),36px);
-  display:grid; place-items:center; background:none; border:0; border-radius:6px;
+  width:clamp(38px,calc(var(--u)*3.9),44px); height:clamp(38px,calc(var(--u)*3.9),44px);
+  display:grid; place-items:center; background:none; border:0; border-radius:7px;
   color:var(--mute); cursor:pointer; padding:0; transition:color .18s ease;
 }
 .icon:hover { color:var(--ink); }
 .icon:focus-visible { outline:2px solid var(--aluminum-lit); outline-offset:2px; }
-.icon svg { width:15px; height:15px; fill:currentColor; }
+.icon svg { width:19px; height:19px; fill:currentColor; }
 
 /* ── countdown + toast ───────────────────────────── */
 #count {
@@ -224,8 +225,8 @@ button.cta:focus-visible, button.txt:focus-visible { outline:2px solid var(--alu
 
 /* ── shift report ────────────────────────────────── */
 .verdict { display:flex; align-items:center; gap:clamp(12px,calc(var(--u)*2),26px); }
-.frame { position:relative; width:clamp(76px,calc(var(--u)*11),120px); height:clamp(76px,calc(var(--u)*11),120px); display:grid; place-items:center; }
-.frame img { max-width:78%; max-height:78%; }
+.frame { position:relative; width:clamp(76px,calc(var(--u)*11),120px); height:clamp(76px,calc(var(--u)*11),120px); display:flex; align-items:center; justify-content:center; }
+.frame img { max-width:78%; max-height:78%; width:auto; height:auto; object-fit:contain; }
 .frame b {
   position:absolute; width:calc(var(--u)*1.7); height:calc(var(--u)*1.7);
   border:1.5px solid var(--alert); animation:snap .45s cubic-bezier(.16,.9,.3,1) backwards;
@@ -332,15 +333,24 @@ button.cta:focus-visible, button.txt:focus-visible { outline:2px solid var(--alu
   #verModal .vm-card{background:#14171A;color:#EDEFF1;border:1px solid rgba(255,255,255,.13);border-radius:14px;
     max-width:540px;width:100%;max-height:86vh;overflow:auto;padding:24px 26px 26px;position:relative;
     box-shadow:0 40px 100px -30px #000;font:400 15px/1.55 system-ui,-apple-system,sans-serif;}
+  #verModal .vm-head{display:flex;align-items:center;justify-content:space-between;gap:16px;}
   #verModal h2{margin:0;font-size:21px;letter-spacing:-.01em;}
   #verModal .vm-date{color:#8A939A;font-size:12.5px;margin:3px 0 16px;}
   #verModal h3{margin:20px 0 6px;font-size:15px;}
   #verModal ul{margin:8px 0 0;padding-left:20px;}
   #verModal li{margin:8px 0;}
   #verModal a{color:#7FB0FF;}
-  #verModal .vm-close{position:absolute;top:12px;right:12px;background:none;border:0;color:#EDEFF1;
-    font-size:24px;line-height:1;cursor:pointer;padding:2px 8px;border-radius:6px;}
+  #verModal .vm-close{background:none;border:0;color:#EDEFF1;flex:0 0 auto;
+    font-size:24px;line-height:1;cursor:pointer;padding:4px 9px;border-radius:6px;}
   #verModal .vm-close:hover{background:rgba(255,255,255,.1);}
+  #scToasts{position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:1002;display:flex;flex-direction:column;gap:8px;
+    align-items:center;pointer-events:none;max-width:min(360px,86vw);}
+  .sc-toast{background:#0E1113;color:#EDEFF1;border:1px solid rgba(255,255,255,.12);border-bottom:3px solid #7C868C;
+    border-radius:10px;padding:11px 16px;text-align:center;font:500 13.5px/1.4 system-ui,-apple-system,sans-serif;
+    box-shadow:0 22px 46px -18px #000;opacity:0;transform:translateY(-10px);transition:opacity .28s ease,transform .28s ease;}
+  .sc-toast.in{opacity:1;transform:none;}
+  .sc-toast.ok{border-bottom-color:#5BC431;}
+  .sc-toast.err{border-bottom-color:#FF6B5E;}
 </style>
 <div id="verBanner" hidden>
   <span>Version 3.1 is here – <a id="verBannerLink" role="button" tabindex="0">we've made some important changes<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4l-8.5 8.5"/><path d="M18 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6"/></svg></a></span>
@@ -348,23 +358,21 @@ button.cta:focus-visible, button.txt:focus-visible { outline:2px solid var(--alu
 </div>
 <div id="verModal" hidden>
   <div class="vm-card" role="dialog" aria-modal="true" aria-labelledby="vmTitle">
-    <button class="vm-close" id="verModalX" aria-label="Close">&times;</button>
-    <h2 id="vmTitle">Update: v3.1</h2>
+    <div class="vm-head">
+      <h2 id="vmTitle">Update: v3.1</h2>
+      <button class="vm-close" id="verModalX" aria-label="Close">&times;</button>
+    </div>
     <div class="vm-date">Thursday, September 17th, 2026 &middot; 12:00 AM</div>
-    <p><strong>You're now competing for some cash prizes!</strong></p>
-    <ul class="prizes">
-      <li>1st place – $50</li>
-      <li>2nd place – $25</li>
-      <li>3rd place – $25</li>
-    </ul>
-    <h3>Also, please note the changes we've made to Sort Circuit:</h3>
+    <h3>Please note these changes we've made to Sort Circuit:</h3>
     <ul>
       <li>The progressive difficulty of the game has been increased – now, it's harder to break into the 900+ points range. As a result, we've decreased the scores of all top competitors on the leaderboard proportionally.</li>
+      <li>The leaderboard now displays the top 25 scores for this cycle. Your own score will always be visible in the top left.</li>
       <li>When you enter your student ID to submit your score, we'll automatically grab your name. Your name and school year are the only two things displayed on the leaderboard. If, for whatever reason, your ID is missing from our database, please email <a href="mailto:ecojustice@brophybroncos.org">ecojustice@brophybroncos.org</a>.</li>
       <li>Please refrain from entering someone else's student ID into the leaderboard. Don't attempt to cheat or &ldquo;hack&rdquo; the game to post an illegitimate score to the leaderboard. It ruins the fun for everyone. Anyone caught doing either is subject to receiving a JUG.</li>
     </ul>
   </div>
 </div>
+<div id="scToasts" aria-live="polite"></div>
 <script>
 (function(){
   var KEY='sc:banner:v3.1:dismissed';
@@ -382,6 +390,14 @@ button.cta:focus-visible, button.txt:focus-visible { outline:2px solid var(--alu
   document.getElementById('verBannerX').addEventListener('click',function(){
     banner.hidden=true; setPad(); try{ localStorage.setItem(KEY,'1'); }catch(e){}
   });
+  // toast popups (bottom-right) for leaderboard save messages
+  window.showToast=function(msg,type){
+    var c=document.getElementById('scToasts'); if(!c) return;
+    var t=document.createElement('div'); t.className='sc-toast'+(type?' '+type:''); t.textContent=msg;
+    c.appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('in'); });
+    setTimeout(function(){ t.classList.remove('in'); setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); },320); },4600);
+  };
 })();
 </script>
 <main id="sc">
@@ -456,7 +472,7 @@ button.cta:focus-visible, button.txt:focus-visible { outline:2px solid var(--alu
         <div><b id="tStreak">0</b><span class="mi">Streak</span></div>
       </div>
       <form class="namebox" id="nameForm" autocomplete="off">
-        <label class="mi" for="nameIn">Enter your Student ID for the leaderboard</label>
+        <label class="mi" for="nameIn">Save your score to the leaderboard</label>
         <div class="row">
           <input id="nameIn" type="text" maxlength="40" placeholder="Student ID" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" inputmode="numeric" pattern="[0-9]+" required>
           <button class="cta" type="submit" id="saveBtn">Save</button>
@@ -1335,13 +1351,13 @@ const Board={
   sort(){ this.entries.sort((a,b)=>b.score-a.score || a.t-b.t); this.entries.length=Math.min(this.entries.length,BOARD_MAX); },
   async save(entry){
     if(REMOTE){
-      if(!rateLimitOk()){ const err=new Error("You're going too fast — the leaderboard takes at most 3 submissions a minute. Please wait a moment and try again."); err.isValidation=true; throw err; }
+      if(!rateLimitOk()){ const err=new Error("You've submitted scores too fast. Please wait a moment and try again."); err.isValidation=true; throw err; }
       // 1) resolve the entered Student ID to a display name via the private roster.
       const sid=String(entry.id||'').replace(/\D/g,'');
-      if(!sid){ const err=new Error('Please enter your Student ID (numbers only).'); err.isValidation=true; throw err; }
+      if(!sid){ const err=new Error('Please enter a valid student ID.'); err.isValidation=true; throw err; }
       const rosterSnap=await fbDb.collection('roster').doc(sid).get();
       if(!rosterSnap.exists){
-        const err=new Error(`That Student ID wasn't recognised. Double-check it, or contact ${CONTACT_EMAIL} if you think this is a mistake.`);
+        const err=new Error(`That Student ID wasn't recognized. Double-check it. Contact ${CONTACT_EMAIL} if you think this is a mistake.`);
         err.isValidation=true; throw err;
       }
       const name=((rosterSnap.data()||{}).n||'').trim()||'Unknown';
@@ -1429,48 +1445,24 @@ function startCooldown(){
 el('nameForm').addEventListener('submit',async ev=>{
   ev.preventDefault();
   const name=el('nameIn').value.trim().replace(/\s+/g,' ');
-  const r=el('rankLine');
-  if(!name){
-    r.hidden=false; r.classList.add('bad');
-    r.innerHTML=formatErrorHtml(scError('ERR_ID_REQUIRED'));
-    return;
-  }
-  if(!/^[0-9]+$/.test(name)){
-    r.hidden=false; r.classList.add('bad');
-    r.innerHTML=formatErrorHtml(scError('ERR_ID_NUMBERS_ONLY'));
-    return;
-  }
-  if(name.length > 40){
-    r.hidden=false; r.classList.add('bad');
-    r.innerHTML=formatErrorHtml(scError('ERR_ID_TOO_LONG'));
-    return;
-  }
-  if(typeof score !== 'number' || score < 0 || isNaN(score)){
-    r.hidden=false; r.classList.add('bad');
-    r.innerHTML=formatErrorHtml(scError('ERR_INVALID_SCORE'));
-    return;
-  }
-  if(lastSaved){ startCooldown(); return; }
+  if(!name || !/^[0-9]+$/.test(name) || name.length>40){ showToast('Please enter a valid student ID.','err'); return; }
+  if(typeof score !== 'number' || score < 0 || isNaN(score)){ showToast(scError('ERR_INVALID_SCORE').message,'err'); return; }
+  if(lastSaved) return;
   // `id` is the Student ID typed by the player; `name` becomes their real name once the
-  // server resolves it, so the board and rank line never show the ID.
+  // server resolves it, so the board never shows the ID.
   const entry={id:name, name, score, timeSeconds:Math.max(0,Math.round(runSeconds)), mode:mode.key, t:Date.now()};
   lastSaved=entry;
   store.set('sc:name',name);
   el('nameIn').disabled=true; el('saveBtn').disabled=true;
-  r.hidden=false; r.classList.remove('bad'); r.textContent='Saving…';
   try{
     const rank=await Board.save(entry);
-    r.textContent = entry.improved===false ? `Your best is still ${entry.best} — you are #${rank} on the leaderboard.`
-                  : rank===1 ? 'New high score! You are #1.' : `Saved — you are #${rank} on the leaderboard.`;
+    showToast(entry.improved===false ? `Your best is still ${entry.best}. You're #${rank} on the leaderboard.`
+            : rank===1 ? "New high score! You're #1." : `New personal best! You're #${rank} on the leaderboard.`, 'ok');
     el('againBtn').focus({preventScroll:true});
   }catch(e){
     console.error(e); lastSaved=null;
     el('nameIn').disabled=false; el('saveBtn').disabled=false;
-    r.classList.add('bad');
-    // user-fixable errors (invalid ID, out-of-range, etc.) show their message directly,
-    // including the contact address; everything else uses the coded error badge.
-    if(e && e.isValidation){ r.textContent = e.message; }
-    else { r.innerHTML=formatErrorHtml(e, 'ERR_SCORE_SAVE_FAILED'); }
+    showToast(e.isValidation ? e.message : "We couldn't reach the leaderboard. Check your connection and try again.", 'err');
   }
 });
 // keep the board fresh: other tabs on this device via storage events, other players via polling
