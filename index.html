@@ -1238,6 +1238,22 @@ function rateLimitOk(){
   if(a.length>=3) return false;
   a.push(now); store.set(K,JSON.stringify(a)); return true;
 }
+// --- Firestore read economy (stays under the Spark free tier) ---------------
+// The "#N ON LEADERBOARD" rank for a player OUTSIDE the top 25 needs a scan of
+// everyone above them. Cache it by score (short TTL) so board repaints and the
+// submit flow reuse one scan instead of re-reading every time. Players ON the
+// top 25 get their exact rank from the already-loaded board (zero extra reads).
+let _rankCache={score:null,rank:null,at:0}; const RANK_TTL=60000;
+async function offBoardRank(b){
+  const now=Date.now();
+  if(_rankCache.score===b && now-_rankCache.at<RANK_TTL) return _rankCache.rank;
+  const hi=await fbDb.collection('scores').where('score','>',b).limit(500).get();
+  _rankCache={score:b,rank:hi.size+1,at:now};
+  return _rankCache.rank;
+}
+// Throttle board reloads triggered by tab refocus (the top 25 rarely changes
+// second-to-second; a reload still runs on page load and after every submit).
+let _lastLoadAt=0; const LOAD_TTL=30000;
 const Board={
   entries:[], online:REMOTE, error:null,
   fromLocal(){ try{ this.entries=JSON.parse(store.get(BOARD_KEY)||'[]'); }catch(e){ this.entries=[]; } this.sort(); },
@@ -1247,7 +1263,7 @@ const Board={
       // Read the public leaderboard directly: display NAMES ("First L") only, no IDs.
       const snap=await fbDb.collection('scores').orderBy('score','desc').orderBy('createdAt','asc').limit(BOARD_MAX).get();
       this.entries=snap.docs.map((d,i)=>{ const r=d.data(); return {rank:i+1,name:r.name,score:r.score,mode:r.mode||'standard',t:i}; });
-      this.online=true; this.error=null;
+      this.online=true; this.error=null; _lastLoadAt=Date.now();
     }catch(e){ console.warn(e); this.online=false; this.error=e; this.fromLocal(); }
     return this.entries;
   },
@@ -1284,7 +1300,7 @@ const Board={
       let rank, idx=this.entries.findIndex(e=>e.name===entry.name && e.score===entry.best);
       if(idx>=0){ rank=idx+1; }
       else{
-        try{ const hi=await fbDb.collection('scores').where('score','>',entry.best).limit(500).get(); rank=hi.size+1; }
+        try{ rank=await offBoardRank(entry.best); }
         catch(_){ rank=this.entries.length+1; }
       }
       entry.rank=rank;
@@ -1308,8 +1324,8 @@ function paintUserHigh(){
   if(es.length < BOARD_MAX || b >= lowest){
     nameEl.textContent = '#'+(es.filter(e=>e.score>b).length+1)+' ON LEADERBOARD';
   } else {
-    fbDb.collection('scores').where('score','>',b).limit(500).get()
-      .then(s=>{ nameEl.textContent='#'+(s.size+1)+' ON LEADERBOARD'; })
+    offBoardRank(b)
+      .then(r=>{ nameEl.textContent='#'+r+' ON LEADERBOARD'; })
       .catch(()=>{ nameEl.textContent=''; });
   }
 }
@@ -1354,7 +1370,7 @@ window.addEventListener('storage',e=>{ if(e.key===BOARD_KEY&&!REMOTE){ Board.loa
 if(REMOTE){
   // No continuous polling (keeps Firestore reads within the free tier). The board
   // refreshes on page load, after each submission, and when the tab regains focus.
-  document.addEventListener('visibilitychange',()=>{ if(!document.hidden) Board.load().then(()=>paintBoard(lastSaved)); });
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden && Date.now()-_lastLoadAt>=LOAD_TTL) Board.load().then(()=>paintBoard(lastSaved)); });
 }
 function saveMute(){ store.set('sc:muted',Sound.muted?'1':'0'); }
 
