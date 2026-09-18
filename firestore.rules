@@ -38,13 +38,13 @@ service cloud.firestore {
 
   // A valid score row: exactly these fields; a display name that starts with a
   // letter (so a bare Student ID can't be used as a name) and may contain the
-  // year (e.g. "Luke M. '27"); score capped 0–1000; a sane elapsed time; and a
+  // year (e.g. "Luke M. '27"); score capped 0–2000; a sane elapsed time; and a
   // server-set timestamp.
   function isValidScore(d) {
     return d.keys().hasOnly(['name', 'score', 'mode', 'timeSeconds', 'createdAt'])
         && d.name is string && d.name.size() >= 1 && d.name.size() <= 40
         && d.name.matches("[\\p{L}][\\p{L}0-9 .'\\-]{0,39}")
-        && d.score is int && d.score >= 0 && d.score <= 1000
+        && d.score is int && d.score >= 0 && d.score <= 2000
         && d.mode == 'standard'
         && d.timeSeconds is int && d.timeSeconds >= 0 && d.timeSeconds <= 86400
         && d.createdAt == request.time;

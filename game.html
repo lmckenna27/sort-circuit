@@ -333,11 +333,18 @@ button.cta:focus-visible, button.txt:focus-visible { outline:2px solid var(--alu
   #verModal .vm-card{background:#14171A;color:#EDEFF1;border:1px solid rgba(255,255,255,.13);border-radius:14px;
     max-width:540px;width:100%;max-height:86vh;overflow:auto;padding:24px 26px 26px;position:relative;
     box-shadow:0 40px 100px -30px #000;font:400 15px/1.55 system-ui,-apple-system,sans-serif;}
-  #verModal .vm-head{display:flex;align-items:center;justify-content:space-between;gap:16px;}
-  #verModal h2{margin:0;font-size:21px;letter-spacing:-.01em;}
+  #verModal .vm-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:2px;}
+  #verModal #vmPick{appearance:none;-webkit-appearance:none;color:#EDEFF1;
+    background:#1B2026 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%238A939A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M1 1l5 5 5-5'/></svg>") no-repeat right 11px center;
+    border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:8px 34px 8px 12px;max-width:75%;
+    font:600 16px/1 system-ui,-apple-system,sans-serif;letter-spacing:-.01em;cursor:pointer;}
+  #verModal #vmPick:focus-visible{outline:2px solid #7FB0FF;outline-offset:1px;}
+  #verModal #vmPick option{background:#14171A;color:#EDEFF1;}
   #verModal .vm-date{color:#8A939A;font-size:12.5px;margin:3px 0 16px;}
   #verModal h3{margin:20px 0 6px;font-size:15px;}
   #verModal ul{margin:8px 0 0;padding-left:20px;}
+  #verModal ul + ul{margin-top:16px;}
+  #verModal hr{border:0;border-top:1px solid rgba(255,255,255,.14);margin:18px 0;}
   #verModal li{margin:8px 0;}
   #verModal a{color:#7FB0FF;}
   #verModal .vm-close{background:none;border:0;color:#EDEFF1;flex:0 0 auto;
@@ -353,34 +360,57 @@ button.cta:focus-visible, button.txt:focus-visible { outline:2px solid var(--alu
   .sc-toast.err{border-bottom-color:#FF6B5E;}
 </style>
 <div id="verBanner" hidden>
-  <span>Version 3.1 is here – <a id="verBannerLink" role="button" tabindex="0">we've made some important changes<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4l-8.5 8.5"/><path d="M18 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6"/></svg></a></span>
+  <span>Update v3.2 is here – <a id="verBannerLink" role="button" tabindex="0">see details<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4l-8.5 8.5"/><path d="M18 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6"/></svg></a></span>
   <button id="verBannerX" aria-label="Dismiss">&times;</button>
 </div>
 <div id="verModal" hidden>
-  <div class="vm-card" role="dialog" aria-modal="true" aria-labelledby="vmTitle">
+  <div class="vm-card" role="dialog" aria-modal="true" aria-label="Sort Circuit updates">
     <div class="vm-head">
-      <h2 id="vmTitle">Update: v3.1</h2>
+      <select id="vmPick" aria-label="Choose an update to view">
+        <option value="3.2">Update v3.2</option>
+        <option value="3.1">Update v3.1</option>
+      </select>
       <button class="vm-close" id="verModalX" aria-label="Close">&times;</button>
     </div>
-    <div class="vm-date">Thursday, September 17th, 2026 &middot; 12:00 AM</div>
-    <h3>Please note these changes we've made to Sort Circuit:</h3>
-    <ul>
-      <li>The progressive difficulty of the game has been increased – now, it's harder to break into the 900+ points range. As a result, we've decreased the scores of all top competitors on the leaderboard proportionally.</li>
-      <li>The leaderboard now displays the top 25 scores for this cycle. Your own score will always be visible in the top left.</li>
-      <li>When you enter your student ID to submit your score, we'll automatically grab your name. Your name and school year are the only two things displayed on the leaderboard. If, for whatever reason, your ID is missing from our database, please email <a href="mailto:ecojustice@brophybroncos.org">ecojustice@brophybroncos.org</a>.</li>
-      <li>Please refrain from entering someone else's student ID into the leaderboard. Don't attempt to cheat or &ldquo;hack&rdquo; the game to post an illegitimate score to the leaderboard. It ruins the fun for everyone. Anyone caught doing either is subject to receiving a JUG.</li>
-    </ul>
+
+    <div class="vm-body" data-ver="3.2">
+      <div class="vm-date">Friday, September 18th, 2026 &middot; 8:00 AM</div>
+      <ul>
+        <li>Scores that exceed 1000 points can now be submitted to the leaderboard. The difficulty and progression of the game remain the same.</li>
+        <li>This competition cycle will run until Tuesday, September 22nd, 2026 at 2:30 PM. Climb the leaderboard until then!</li>
+      </ul>
+      <hr>
+      <ul>
+        <li>Please refrain from entering someone else's student ID into the leaderboard. Don't attempt to cheat or &ldquo;hack&rdquo; the game to post an illegitimate score to the leaderboard. It ruins the fun for everyone. Anyone caught doing either is subject to receiving a JUG.</li>
+        <li>If your student ID is missing from our database, please email <a href="mailto:ecojustice@brophybroncos.org">ecojustice@brophybroncos.org</a> with a screenshot of your score.</li>
+      </ul>
+    </div>
+
+    <div class="vm-body" data-ver="3.1" hidden>
+      <div class="vm-date">Thursday, September 17th, 2026 &middot; 8:00 AM</div>
+      <h3>Please note these changes we've made to Sort Circuit:</h3>
+      <ul>
+        <li>The progressive difficulty of the game has been increased – now, it's harder to break into the 900+ points range. As a result, we've decreased the scores of all top competitors on the leaderboard proportionally.</li>
+        <li>The leaderboard now displays the top 25 scores for this cycle. Your own score will always be visible in the top left.</li>
+        <li>When you enter your student ID to submit your score, we'll automatically grab your name. Your name and school year are the only two things displayed on the leaderboard. If, for whatever reason, your ID is missing from our database, please email <a href="mailto:ecojustice@brophybroncos.org">ecojustice@brophybroncos.org</a>.</li>
+        <li>Please refrain from entering someone else's student ID into the leaderboard. Don't attempt to cheat or &ldquo;hack&rdquo; the game to post an illegitimate score to the leaderboard. It ruins the fun for everyone. Anyone caught doing either is subject to receiving a JUG.</li>
+      </ul>
+    </div>
   </div>
 </div>
 <div id="scToasts" aria-live="polite"></div>
 <script>
 (function(){
-  var KEY='sc:banner:v3.1:dismissed';
+  var KEY='sc:banner:v3.2:dismissed';
   var banner=document.getElementById('verBanner'), modal=document.getElementById('verModal');
   function setPad(){ document.body.style.paddingTop = banner.hidden ? '' : banner.offsetHeight+'px'; }
   try{ if(localStorage.getItem(KEY)!=='1') banner.hidden=false; }catch(e){ banner.hidden=false; }
   setPad(); window.addEventListener('resize',setPad);
-  var openM=function(){ modal.hidden=false; }, closeM=function(){ modal.hidden=true; };
+  var pick=document.getElementById('vmPick');
+  var bodies=modal.querySelectorAll('.vm-body');
+  function showVer(v){ for(var i=0;i<bodies.length;i++){ bodies[i].hidden = bodies[i].getAttribute('data-ver')!==v; } }
+  pick.addEventListener('change',function(){ showVer(pick.value); });
+  var openM=function(){ pick.value='3.2'; showVer('3.2'); modal.hidden=false; }, closeM=function(){ modal.hidden=true; };
   var link=document.getElementById('verBannerLink');
   link.addEventListener('click',function(e){ e.preventDefault(); openM(); });
   link.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openM(); } });
@@ -1361,7 +1391,7 @@ const Board={
         err.isValidation=true; throw err;
       }
       const name=((rosterSnap.data()||{}).n||'').trim()||'Unknown';
-      const sc=Math.max(0, Math.min(1000, entry.score|0));            // rules also enforce 0..1000
+      const sc=Math.max(0, Math.min(2000, entry.score|0));            // rules also enforce 0..2000
       const secs=Math.max(0, Math.min(86400, entry.timeSeconds|0));   // seconds played (rules cap too)
       entry.name=name;
       // 2) ONE row per student, keyed by a hash of the Student ID (so two students
