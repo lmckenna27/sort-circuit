@@ -292,14 +292,15 @@ button.cta:focus-visible, button.txt:focus-visible { outline:2px solid var(--alu
 <style>
   #verBanner{position:fixed;top:0;left:0;right:0;z-index:1000;background:#FBD024;color:#111;
     font:600 clamp(12px,2.5vw,14px)/1.35 system-ui,-apple-system,sans-serif;display:flex;align-items:center;
-    justify-content:center;gap:.4em;padding:9px 42px 9px 16px;text-align:center;}
-  #verBanner[hidden]{display:none;}
-  #verBanner a{color:#111;text-decoration:underline;text-underline-offset:2px;cursor:pointer;
-    display:inline-flex;align-items:center;gap:.32em;font-weight:400;}
-  #verBanner a svg{width:1em;height:1em;flex:none;}
-  #verBannerX{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:0;
-    color:#111;font-size:22px;line-height:1;cursor:pointer;padding:0 7px;border-radius:5px;}
-  #verBannerX:hover{background:rgba(0,0,0,.14);}
+    justify-content:center;gap:.4em;padding:9px 16px;text-align:center;}
+  #verBanner #cdClock{font-variant-numeric:tabular-nums;letter-spacing:.04em;font-weight:800;}
+  #verBanner.ended #cdClock{color:#B00020;}
+  #verOpener{position:fixed;right:14px;bottom:14px;z-index:1000;display:inline-flex;align-items:center;gap:.34em;
+    font:500 12px/1 system-ui,-apple-system,sans-serif;color:#8A939A;cursor:pointer;text-decoration:none;
+    background:rgba(20,23,26,.66);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 10px;}
+  #verOpener:hover{color:#EDEFF1;border-color:rgba(255,255,255,.22);}
+  #verOpener:focus-visible{outline:2px solid #7FB0FF;outline-offset:2px;}
+  #verOpener svg{width:1em;height:1em;flex:none;}
   #verModal{position:fixed;inset:0;z-index:1001;background:rgba(0,0,0,.64);display:flex;
     align-items:center;justify-content:center;padding:18px;}
   #verModal[hidden]{display:none;}
@@ -332,9 +333,8 @@ button.cta:focus-visible, button.txt:focus-visible { outline:2px solid var(--alu
   .sc-toast.ok{border-bottom-color:#5BC431;}
   .sc-toast.err{border-bottom-color:#FF6B5E;}
 </style>
-<div id="verBanner" hidden>
-  <span>Update v3.2 is here – <a id="verBannerLink" role="button" tabindex="0">see details<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4l-8.5 8.5"/><path d="M18 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6"/></svg></a></span>
-  <button id="verBannerX" aria-label="Dismiss">&times;</button>
+<div id="verBanner">
+  <span id="cdLead">Competition ends in</span> <b id="cdClock">--:--:--</b>
 </div>
 <div id="verModal" hidden>
   <div class="vm-card" role="dialog" aria-modal="true" aria-label="Sort Circuit updates">
@@ -350,7 +350,7 @@ button.cta:focus-visible, button.txt:focus-visible { outline:2px solid var(--alu
       <div class="vm-date">Friday, September 18th, 2026 &middot; 8:00 AM</div>
       <ul>
         <li>Scores that exceed 1000 points can now be submitted to the leaderboard. The difficulty and progression of the game remain the same.</li>
-        <li>This competition cycle will run until Tuesday, September 22nd, 2026 at 2:30 PM. Climb the leaderboard until then!</li>
+        <li>This competition cycle will run until Tuesday, September 22nd, 2026 at 3:30 PM. Climb the leaderboard until then!</li>
       </ul>
       <hr>
       <ul>
@@ -371,28 +371,39 @@ button.cta:focus-visible, button.txt:focus-visible { outline:2px solid var(--alu
     </div>
   </div>
 </div>
+<a id="verOpener" role="button" tabindex="0" title="What's new">Update v3.2 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4l-8.5 8.5"/><path d="M18 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6"/></svg></a>
 <div id="scToasts" aria-live="polite"></div>
 <script>
 (function(){
-  var KEY='sc:banner:v3.2:dismissed';
-  var banner=document.getElementById('verBanner'), modal=document.getElementById('verModal');
-  function setPad(){ document.body.style.paddingTop = banner.hidden ? '' : banner.offsetHeight+'px'; }
-  try{ if(localStorage.getItem(KEY)!=='1') banner.hidden=false; }catch(e){ banner.hidden=false; }
-  setPad(); window.addEventListener('resize',setPad);
+  var modal=document.getElementById('verModal');
+  var verBanner=document.getElementById('verBanner');
+  function setPad(){ document.body.style.paddingTop = verBanner.offsetHeight+'px'; }
   var pick=document.getElementById('vmPick');
   var bodies=modal.querySelectorAll('.vm-body');
   function showVer(v){ for(var i=0;i<bodies.length;i++){ bodies[i].hidden = bodies[i].getAttribute('data-ver')!==v; } }
   pick.addEventListener('change',function(){ showVer(pick.value); });
   var openM=function(){ pick.value='3.2'; showVer('3.2'); modal.hidden=false; }, closeM=function(){ modal.hidden=true; };
-  var link=document.getElementById('verBannerLink');
-  link.addEventListener('click',function(e){ e.preventDefault(); openM(); });
-  link.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openM(); } });
+  var opener=document.getElementById('verOpener');
+  opener.addEventListener('click',function(e){ e.preventDefault(); openM(); });
+  opener.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openM(); } });
   document.getElementById('verModalX').addEventListener('click',closeM);
   modal.addEventListener('click',function(e){ if(e.target===modal) closeM(); });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeM(); });
-  document.getElementById('verBannerX').addEventListener('click',function(){
-    banner.hidden=true; setPad(); try{ localStorage.setItem(KEY,'1'); }catch(e){}
-  });
+  // Countdown in the yellow banner: 3:30 PM MST (Arizona = UTC-7, no DST) on Sep 22, 2026 = 22:30 UTC.
+  var CD_END=Date.UTC(2026,8,22,22,30,0);
+  var cdLead=document.getElementById('cdLead'), cdClock=document.getElementById('cdClock'), cdTimer;
+  function p2(n){ return (n<10?'0':'')+n; }
+  function tickCd(){
+    var ms=CD_END-Date.now();
+    if(ms<=0){
+      cdClock.textContent='00:00:00'; cdLead.textContent='Competition has ended —';
+      verBanner.classList.add('ended'); if(cdTimer) clearInterval(cdTimer); return;
+    }
+    var s=Math.floor(ms/1000), h=Math.floor(s/3600), m=Math.floor((s%3600)/60);
+    cdClock.textContent=p2(h)+':'+p2(m)+':'+p2(s%60);
+  }
+  tickCd(); cdTimer=setInterval(tickCd,1000);
+  setPad(); window.addEventListener('resize',setPad);
   // toast popups (bottom-right) for leaderboard save messages
   window.showToast=function(msg,type){
     var c=document.getElementById('scToasts'); if(!c) return;
